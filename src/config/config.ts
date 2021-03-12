@@ -7,6 +7,7 @@ const res = dotenv.config();
 
 interface Environment {
   env: string;
+  mongo_uri: string;
   silent_logger: boolean;
   tolerance: number;
 }
@@ -15,6 +16,7 @@ export const environment_variables: Environment = {
   env: process.env.NODE_ENV,
   silent_logger: booleanTransformer(process.env.LOGGER_SILENCE),
   tolerance: parseFloat(process.env.DOCUMENT_TOLERANCE),
+  mongo_uri: process.env.NODE_ENV === 'prod' ? process.env.MONGO_URI : process.env.MONGO_URI_LOCAL
 };
 class Config {
   private static instance: any;
@@ -35,6 +37,9 @@ class Config {
   }
 
   static init(): void {
+    console.log('init', environment_variables.env);
+    // const testing = require('../../prod.config.json');
+    // console.log('TESTSS', testing);
     if (!this.instance) {
       switch (environment_variables.env) {
         case 'prod':

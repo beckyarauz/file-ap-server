@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { IRimModel, IRimPolicyModel, RimModel, RimPolicyModel } from './config/rims.model';
 
 export class RimsDAL {
