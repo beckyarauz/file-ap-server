@@ -13,7 +13,10 @@ export const columns: ColumnsConfig[] = [
     size: 5,
     order: 1,
     schemaConfig: {
-      required: true
+      field: "code",
+      options: {
+        required: true
+      }
     }
   },
   {
@@ -22,6 +25,9 @@ export const columns: ColumnsConfig[] = [
     type: 'number',
     size: 5,
     order: 2,
+    schemaConfig: {
+      field: "width"
+    }
   },
   {
     name: 'height',
@@ -29,6 +35,9 @@ export const columns: ColumnsConfig[] = [
     type: 'string',
     size: 1,
     order: 3,
+    schemaConfig: {
+      field: "height"
+    }
   },
   {
     name: 'diameter',
@@ -36,6 +45,9 @@ export const columns: ColumnsConfig[] = [
     type: 'number',
     size: 2,
     order: 5,
+    schemaConfig: {
+      field: "diameter"
+    }
   },
   {
     name: 'one_piece',
@@ -47,6 +59,9 @@ export const columns: ColumnsConfig[] = [
     },
     size: 1,
     order: 4,
+    schemaConfig: {
+      field: "isOnePiece"
+    }
   },
   {
     name: 'material',
@@ -54,6 +69,9 @@ export const columns: ColumnsConfig[] = [
     type: 'string',
     size: 1,
     order: 6,
+    schemaConfig: {
+      field: "material"
+    }
   },
 ];
 

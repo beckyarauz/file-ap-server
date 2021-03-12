@@ -1,5 +1,6 @@
 {
   "rims": {
+    "schema_version": "1",
     "fileColumns": [
       {
         "name": "code",

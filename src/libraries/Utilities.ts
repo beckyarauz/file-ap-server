@@ -50,7 +50,7 @@ export const schemaObjectBuilder = (columns: ColumnsConfig[]) => {
     if (col.schemaConfig) {
       schemaObject[key] = {
         ...schemaObject[key],
-        ...col.schemaConfig
+        ...col.schemaConfig.options
       };
     }
   }
