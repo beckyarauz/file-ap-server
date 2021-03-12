@@ -12,8 +12,6 @@ process.on('unhandledRejection', (exception: Error) => {
 });
 
 Config.init();
-const d = Config.getInstance();
-console.log(d.getConfig());
 
 createDB();
 

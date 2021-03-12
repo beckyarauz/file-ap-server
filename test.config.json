@@ -1,6 +1,15 @@
 {
   "rims": {
     "schema_version": "2",
+    "nonUpdatableFields": ["code"],
+    "nonRemovableFields": [
+      "_id",
+      "schema_version",
+      "__v",
+      "versions",
+      "identifier",
+      "code"
+    ],
     "fileColumns": [
       {
         "name": "code",
