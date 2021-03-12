@@ -1,28 +1,40 @@
 import * as prodConfigFile from '../../prod.config.json';
 import * as testConfigFile from '../../test.config.json';
+import { booleanTransformer } from '../libraries/Utilities';
 
 const dotenv = require('dotenv');
 const res = dotenv.config();
+
+interface Environment {
+  env: string;
+  silent_logger: boolean;
+}
+
+export const environment_variables: Environment = {
+  env: process.env.NODE_ENV,
+  silent_logger: booleanTransformer(process.env.LOGGER_SILENCE),
+};
 class Config {
   private static instance: any;
   private config: any;
   private constructor(file: any) {
+    // TODO: add config schema validation
     this.convertPatternsToRegex(file);
     this.config = file;
   }
 
   private convertPatternsToRegex(file: any) {
     for (const key of Object.keys(file.default)) {
-        file.default[key].fileColumns = file.default[key].fileColumns.map((el: any) => {
-          el.pattern = new RegExp(el.pattern);
-          return el;
-        });
-      }
+      file.default[key].fileColumns = file.default[key].fileColumns.map((el: any) => {
+        el.pattern = new RegExp(el.pattern);
+        return el;
+      });
+    }
   }
 
   static init(): void {
     if (!this.instance) {
-      switch (process.env.NODE_ENV) {
+      switch (environment_variables.env) {
         case 'prod':
           this.instance = new this(prodConfigFile);
           break;

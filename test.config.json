@@ -13,7 +13,7 @@
     "fileColumns": [
       {
         "name": "code",
-        "pattern": "/^[0-9]{5}$/",
+        "pattern": "^[0-9]{5}$",
         "type": "string",
         "size": 5,
         "order": 1,
@@ -26,7 +26,7 @@
       },
       {
         "name": "height",
-        "pattern": "/^[A-Z]{1}$/",
+        "pattern": "^[A-Z]{1}$",
         "type": "string",
         "size": 1,
         "order": 3,
@@ -36,7 +36,7 @@
       },
       {
         "name": "diameter",
-        "pattern": "/^\\d{2}$/",
+        "pattern": "^\\d{2}$",
         "type": "number",
         "size": 2,
         "order": 5,
@@ -46,7 +46,7 @@
       },
       {
         "name": "one_piece",
-        "pattern": "/^[xX]{1}$/",
+        "pattern": "^[xX]{1}$",
         "type": "boolean",
         "config": {
           "true": "X",
@@ -60,7 +60,7 @@
       },
       {
         "name": "material",
-        "pattern": "/^[SL]{1}$/",
+        "pattern": "^[SL]{1}$",
         "type": "string",
         "size": 1,
         "order": 6,

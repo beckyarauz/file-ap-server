@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import { LeanDocument } from 'mongoose';
 import { logger } from '../config/logger';
+import { RowData } from '../libraries/Global.interfaces';
+import { ReferenceId } from '../libraries/Global.types';
 import { ObjectMapper } from '../libraries/ObjectMapper';
 import { toCamel } from '../libraries/Utilities';
-import { ReferenceId } from '../libraries/Global.types';
-import { columns, nonRemovableFields, version } from './config/rims.config';
-import { mapper as rimsMapper } from './Mapper/rims.mapper';
+import { columns, nonRemovableFields, nonUpdatableFields, version } from './config/rims.config';
 import { IRim, IRimModel, IRimPolicyModel, RimModel } from './config/rims.model';
+import { mapper as rimsMapper } from './Mapper/rims.mapper';
 import { RimsDAL } from './rims.DAL';
-import { RowData } from '../libraries/Global.interfaces';
 
 export class RimsHelper {
   private rawDocuments: RowData[];
@@ -26,7 +26,6 @@ export class RimsHelper {
   }
 
   getUpdatableRimProperties = () => {
-    const nonUpdatableFields = ['code'];
     const props = this.getProperties();
 
     return props.filter(prop => !nonUpdatableFields.includes(prop));
@@ -58,7 +57,7 @@ export class RimsHelper {
         schema_version
       },
       docObject
-        ) as IRimPolicyModel;
+    ) as IRimPolicyModel;
     return await this.rimsDAL.saveRimPolicy(policyObject);
   }
 
@@ -133,7 +132,7 @@ export class RimsHelper {
         } else {
           try {
             const doc = this.documents.find(doc => doc.code === code) as IRimModel;
-                // doc.schema_version = version;
+            // doc.schema_version = version;
             await this.rimsDAL.saveRim(doc);
           } catch (e) {
             logger.error('rims-save-rim-error', e);

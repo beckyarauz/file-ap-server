@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import * as winston from 'winston';
+import { environment_variables } from './config';
 
 interface LoggerDefaultFields {
   logLevel: string;
@@ -15,7 +15,7 @@ interface LoggerDefaultFields {
 class Logger {
   application: string;
   logLevel: string;
-  logLevels: { [key: string]: number};
+  logLevels: { [key: string]: number };
   logLevelCode: number;
   winstonLogger: winston.Logger;
 
@@ -28,6 +28,7 @@ class Logger {
     const consoleTransport = new winston.transports.Console({
       level: this.logLevel,
       handleExceptions: true,
+      silent: environment_variables.silent_logger
     });
 
     this.winstonLogger = winston.createLogger({
@@ -106,5 +107,6 @@ class Logger {
 const logger = new Logger();
 
 export {
-    logger
+  logger
 };
+

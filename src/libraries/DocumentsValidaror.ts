@@ -34,7 +34,7 @@ export class DocumentsValidator<V extends Validator>{
         if (validation.error) {
           logger.warn('validate-row-invalid-line-warning', validation.error.message);
           this.invalidLines.push(doc);
-          // this.isWithinTolerance();
+          this.isWithinTolerance();
         } else {
           this.validLines.push(doc);
         }
@@ -50,7 +50,7 @@ export class DocumentsValidator<V extends Validator>{
       this.validateRows();
       return this.validLines;
     } catch (e) {
-      console.log(e);
+      throw (e);
       return;
     }
   }

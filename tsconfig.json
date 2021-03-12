@@ -16,6 +16,7 @@
         }
     },
     "include": [
+        "tests/**/*",
         "src/**/*.json",
         "src/**/*",
         "index.ts"
