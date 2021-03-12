@@ -106,7 +106,7 @@ const validObjects: RowData[] = [
     one_piece: 'x',
     diameter: '13',
     material: 'S',
-    random: true
+    random: 'true'
   },
   {
     code: '00013',
@@ -115,7 +115,7 @@ const validObjects: RowData[] = [
     one_piece: 'X',
     diameter: '17',
     material: 'S',
-    random: true
+    random: 'true'
   },
   {
     code: '00014',
@@ -151,7 +151,7 @@ const validObjects: RowData[] = [
     one_piece: 'x',
     diameter: '15',
     material: 'L',
-    random: true
+    random: 'true'
   },
   {
     code: '00018',
@@ -160,7 +160,7 @@ const validObjects: RowData[] = [
     one_piece: 'x',
     diameter: '17',
     material: 'L',
-    random: true
+    random: 'true'
   },
   {
     code: '00019',
@@ -169,7 +169,7 @@ const validObjects: RowData[] = [
     one_piece: 'x',
     diameter: '17',
     material: 'L',
-    random: true
+    random: 'true'
   },
   {
     code: '00020',
@@ -178,7 +178,7 @@ const validObjects: RowData[] = [
     one_piece: 'x',
     diameter: '13',
     material: 'L',
-    random: true
+    random: 'true'
   },
   {
     code: '00021',

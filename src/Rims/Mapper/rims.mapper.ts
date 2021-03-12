@@ -1,16 +1,16 @@
 import { ObjectMapper } from '../../libraries/ObjectMapper';
 import { booleanTransformer, stringToNumber, toCamel } from '../../libraries/Utilities';
-import { columns as rimsColumns } from '../config/rims.config';
+import { getRimsColumns } from '../config/rims.config';
 
 const rimsBooleanTransformer = (value: string, oldObject: any, newObject: any, name: string) => {
-  const settings = rimsColumns.find(col => col.name === name);
+  const settings = getRimsColumns().find(col => col.name === name);
   const config = settings ? settings.parsingConfig : null;
   return booleanTransformer(value, config);
 };
 
-const generateMapper = () => {
+export const generateMapper = () => {
   const obj: any = {};
-  for (const col of rimsColumns) {
+  for (const col of getRimsColumns()) {
     const key = toCamel(col.name);
     switch (col.type) {
       case 'string':
@@ -34,5 +34,3 @@ const generateMapper = () => {
 
   return new ObjectMapper(obj);
 };
-
-export const mapper = generateMapper();

@@ -5,34 +5,35 @@ import { RowData } from '../libraries/Global.interfaces';
 import { ReferenceId } from '../libraries/Global.types';
 import { ObjectMapper } from '../libraries/ObjectMapper';
 import { toCamel } from '../libraries/Utilities';
-import { columns, nonRemovableFields, nonUpdatableFields, version } from './config/rims.config';
+import { getRimsColumns, getRimsVersion, nonRemovableFields, nonUpdatableFields } from './config/rims.config';
 import { IRim, IRimModel, IRimPolicyModel, RimModel } from './config/rims.model';
-import { mapper as rimsMapper } from './Mapper/rims.mapper';
+import { generateMapper } from './Mapper/rims.mapper';
 import { RimsDAL } from './rims.DAL';
 
 export class RimsHelper {
-  private rawDocuments: RowData[];
+  rawDocuments: RowData[];
   private documents: IRim[];
-  private mapper: ObjectMapper = rimsMapper;
-  private rimsDAL = new RimsDAL();
+  private mapper: ObjectMapper = generateMapper();
+  private rimsDAL: RimsDAL;
 
   constructor(documents: RowData[]) {
     this.rawDocuments = documents;
     this.documents = this.formatRows();
+    this.rimsDAL = new RimsDAL();
   }
 
-  getProperties = () => {
-    return columns.map(col => toCamel(col.name));
+  static getProperties = () => {
+    return getRimsColumns().map(col => toCamel(col.name));
   }
 
   getUpdatableRimProperties = () => {
-    const props = this.getProperties();
+    const props = RimsHelper.getProperties();
 
     return props.filter(prop => !nonUpdatableFields.includes(prop));
   }
 
   hasCurrentVersion = (doc: IRimModel | LeanDocument<IRimModel>): boolean => {
-    return doc.schema_version === version;
+    return doc.schema_version === getRimsVersion();
   }
 
   formatRows = (): IRim[] => {
@@ -40,7 +41,7 @@ export class RimsHelper {
   }
 
   getObjectWithUpdatableFields = (doc: IRimModel) => {
-    const document = _.pick(doc, ...this.getProperties());
+    const document = _.pick(doc, ...RimsHelper.getProperties());
     delete document.code;
     return document;
   }
@@ -48,15 +49,16 @@ export class RimsHelper {
   storePolicyVersion = async (doc: IRimModel): Promise<IRimPolicyModel> => {
     const identifier: string = doc._id.toString();
     const schema_version: string = doc.schema_version;
-    const docObject = _.pick(doc, ...this.getProperties());
-
-    // TOD: ensure indexes of identifier + schema_version are unique
+    const code: string = doc.code;
+    const fields = Object.keys(doc).filter(key => !['_id', '__v', 'versions'].includes(key));
+    const docObject = _.pick(doc, ...fields);
     const policyObject = _.assign(
+      docObject,
       {
+        code,
         identifier,
         schema_version
-      },
-      docObject
+      }
     ) as IRimPolicyModel;
     return await this.rimsDAL.saveRimPolicy(policyObject);
   }
@@ -80,25 +82,25 @@ export class RimsHelper {
     const originalDoc: IRimModel = _.assign({}, doc);
 
     // build document with original properties and replace with new ones
-    const updateDoc: IRimModel = _.pick(_.assign(originalDoc, newDoc), ...this.getProperties()) as IRimModel;
+    const updateDoc: IRimModel = _.pick(_.assign(originalDoc, newDoc), ...RimsHelper.getProperties()) as IRimModel;
 
     // add reference to policies
     updateDoc.versions = this.buildVersionsList(doc.versions, oldVersionId);
 
     // update to current version
-    updateDoc.schema_version = version;
+    updateDoc.schema_version = getRimsVersion();
 
     // handle non overwritable fields
     updateDoc.code = doc.code;
 
-    await RimModel.replaceOne({ code: doc.code }, updateDoc);
+    return await RimModel.replaceOne({ code: doc.code }, updateDoc);
   }
 
   updateDocumentData = async (doc: { code: string; id: ReferenceId; }) => {
     const newDoc = this.documents.find(newDoc => newDoc.code === doc.code);
     const updateDoc = _.pick(newDoc, ...this.getUpdatableRimProperties()); // avoid "updating" code and schema_version field
 
-    await this.rimsDAL.updateOneById(
+    return await this.rimsDAL.updateOneById(
       doc.id,
       {
         $set: {
@@ -112,34 +114,35 @@ export class RimsHelper {
       if (!this.hasCurrentVersion(dbDoc)) {
         const oldVersion = await this.storePolicyVersion(dbDoc);
         // update to new version
-        await this.updateDocumentAsCurrentVersion(dbDoc, oldVersion._id.toString());
-      } else {
-        await this.updateDocumentData({ code: dbDoc.code, id: dbDoc._id });
+        return await this.updateDocumentAsCurrentVersion(dbDoc, oldVersion._id.toString());
       }
+      return await this.updateDocumentData({ code: dbDoc.code, id: dbDoc._id });
     } catch (e) {
       console.error(e);
       logger.error('rims-update-document-error', e);
     }
   }
 
-  handleInsertionAndUpdate = async (): Promise<void> => {
+  handleInsertionAndUpdate = async (): Promise<any[]> => {
     try {
       const codesArray = this.documents.map(doc => doc.code);
+      const successDocs: any[] = [];
       for (const code of codesArray) {
         const dbDoc = (await this.rimsDAL.findOne({ code }).lean().exec()) as IRimModel;
         if (dbDoc) {
-          await this.handleDocumentUpdate(dbDoc);
+          const updatedDoc = await this.handleDocumentUpdate(dbDoc);
+          successDocs.push(updatedDoc);
         } else {
           try {
             const doc = this.documents.find(doc => doc.code === code) as IRimModel;
-            // doc.schema_version = version;
-            await this.rimsDAL.saveRim(doc);
+            const savedDoc = await this.rimsDAL.saveRim(doc);
+            successDocs.push(savedDoc);
           } catch (e) {
             logger.error('rims-save-rim-error', e);
           }
         }
       }
-      return;
+      return successDocs;
     } catch (e) {
       console.error(e);
       logger.error('rims-insert-and-update-error', e);

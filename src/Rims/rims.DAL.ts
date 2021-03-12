@@ -13,6 +13,14 @@ export class RimsDAL {
     return new RimPolicyModel(doc).save();
   }
 
+  findPolicies = (query: { [key: string]: any }) => {
+    return RimPolicyModel.find(query);
+  }
+
+  findPolicy = (query: { [key: string]: any }) => {
+    return RimPolicyModel.findOne(query);
+  }
+
   find = (query: { [key: string]: any }) => {
     return RimModel.find(query);
   }

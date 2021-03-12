@@ -1,22 +1,22 @@
 import chai, { expect } from 'chai';
+import chaiExclude from 'chai-exclude';
+import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
-import mongoose from 'mongoose';
 import { environment_variables } from '../../../src/config/config';
-import { RimModel, RimPolicyModel } from '../../../src/Rims/config/rims.model';
-import { RimsDAL } from '../../../src/Rims/rims.DAL';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
 import { RimsDocumentsValidator } from '../../../src/Rims/Validator/rims.Validator';
 import docs from '../../data/v1/rims.rawDocuments.all.v1';
 import invalidDocs from '../../data/v1/rims.rawObject.invalid.v1';
 import validDocs from '../../data/v1/rims.rawObject.valid.v1';
-import { init } from '../init';
 
-init(chai);
+chai.use(chaiExclude);
+chai.use(deepEqualInAnyOrder);
+environment_variables.tolerance = 20;
 
 describe('[RIMS]', async () => {
   let helper: RimsHelper;
   const brokenDocsArray = [
-        { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
+    { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
   const invalidDocsAllowedAmmount = Math.round((validDocs.length + invalidDocs.length) * environment_variables.tolerance / 100);
 
@@ -122,41 +122,16 @@ describe('[RIMS]', async () => {
 
   it('RimsHelper - should get rims document properties', async () => {
     const helper = new RimsHelper(docs);
-    const properties = helper.getProperties();
+    const properties = RimsHelper.getProperties();
     expect(properties).to.deep.equalInAnyOrder(['code', 'width', 'height', 'diameter', 'onePiece', 'material']);
   });
 
   it('RimsHelper - should get updatableRimProperties', async () => {
     const helper = new RimsHelper(docs);
-    const properties = helper.getProperties();
+    const properties = RimsHelper.getProperties();
     expect(properties).to.deep.equalInAnyOrder(['code', 'width', 'height', 'diameter', 'onePiece', 'material']);
   });
 
-  it('Saving Documents - should save documents', async () => {
-    const validator = new RimsDocumentsValidator(validDocs);
-    const validDocuments = validator.validate();
-    await (new RimsHelper(validDocuments)).handleInsertionAndUpdate();
-    const dal = new RimsDAL();
-
-    const docs = await dal.find({}).lean().exec();
-
-    expect(docs.length).to.equal(validDocuments.length);
-  });
-
-  it('Saving With different version - should save documents', async () => {
-    const validator = new RimsDocumentsValidator(validDocs);
-    const validDocuments = validator.validate();
-    await (new RimsHelper(validDocuments)).handleInsertionAndUpdate();
-    const dal = new RimsDAL();
-
-    const docs = await dal.find({}).lean().exec();
-
-    expect(docs.length).to.equal(validDocuments.length);
-  });
-
   after(async () => {
-    await RimModel.deleteMany({});
-    await RimPolicyModel.deleteMany({});
-    await mongoose.disconnect();
   });
 });

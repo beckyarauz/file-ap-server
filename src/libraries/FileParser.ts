@@ -2,7 +2,7 @@ import { Request } from 'express';
 import * as formidable from 'formidable';
 import fs from 'fs';
 import { logger } from '../config/logger';
-import {  FileColumns, RowData } from './Global.interfaces';
+import { FileColumns, RowData } from './Global.interfaces';
 
 export class RequestFileParser {
   private form: formidable.IncomingForm;
@@ -24,14 +24,15 @@ export class RequestFileParser {
     this.form = new formidable.IncomingForm();
   }
 
-  parseStringToObjects = () => {
-    for (const element of this.dataArray) {
+  static parseStringToObjects = (dataArray: string[], columns: FileColumns[]) => {
+    const rows = [];
+    for (const element of dataArray) {
       let count = 1;
       let start = 0;
       const row: { [key: string]: any } = {};
 
-      while (count <= this.columns.length) {
-        const col = this.columns.find(coli => coli.order === count);
+      while (count <= columns.length) {
+        const col = columns.find((coli) => coli.order === count);
         const end = (start + col.size);
         row[col.name] = element.substring(start, end).trim();
 
@@ -39,13 +40,15 @@ export class RequestFileParser {
         count++;
       }
 
-      this.rows.push(row);
+      rows.push(row);
     }
+
+    return rows;
   }
 
-  parseRequestFileToArray = (): Promise<string[]> => {
+  static parseRequestFileToArray = (request: Request, form: formidable.IncomingForm): Promise<string[]> => {
     return new Promise((resolve, reject) => {
-      this.form.parse(this.request, (err, fields, files: formidable.Files) => {
+      form.parse(request, (err, fields, files: formidable.Files) => {
         if (!Array.isArray(files.file)) {
           fs.readFile(files.file.path, 'utf8', (error, data: string) => {
             if (error) {
@@ -63,9 +66,9 @@ export class RequestFileParser {
 
   parseRequestFile = async (): Promise<RowData[]> => {
     try {
-      this.dataArray = await this.parseRequestFileToArray() as unknown as string[];
+      this.dataArray = await RequestFileParser.parseRequestFileToArray(this.request, this.form) as unknown as string[];
       logger.info('file-upload-handler', `File upload started. Lines Amount: ${this.dataArray.length}`);
-      this.parseStringToObjects();
+      this.rows = RequestFileParser.parseStringToObjects(this.dataArray, this.columns);
       return this.rows;
     } catch (e) {
       throw e;

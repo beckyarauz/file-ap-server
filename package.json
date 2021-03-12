@@ -9,7 +9,8 @@
     "prestart": "npm run build",
     "start": "nodemon .",
     "dev": "nodemon .",
-    "test-rims": "npm run build && mocha --bail --timeout 6000 --file dist/tests/units/rims/rims.spec.js"
+    "test-rims-units": "npm run build && mocha --bail --timeout 6000 --file dist/tests/units/rims/rims.spec.js",
+    "test-rims-integration": "npm run build && mocha --bail --timeout 6000 --file dist/tests/integration/rims/rims.spec.js"
   },
   "keywords": [],
   "author": "",

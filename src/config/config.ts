@@ -1,6 +1,5 @@
-import * as prodConfigFile from '../../prod.config.json';
-import * as testConfigFile from '../../test.config.json';
 import { booleanTransformer } from '../libraries/Utilities';
+import { init as rimsConfigInit } from '../Rims/config/rims.config';
 
 const dotenv = require('dotenv');
 const res = dotenv.config();
@@ -28,31 +27,25 @@ class Config {
   }
 
   private convertPatternsToRegex(file: any) {
-    for (const key of Object.keys(file.default)) {
-      file.default[key].fileColumns = file.default[key].fileColumns.map((el: any) => {
+    for (const key of Object.keys(file)) {
+      file[key].fileColumns = file[key].fileColumns.map((el: any) => {
         el.pattern = new RegExp(el.pattern);
         return el;
       });
     }
   }
 
-  static init(): void {
-    console.log('init', environment_variables.env);
-    // const testing = require('../../prod.config.json');
-    // console.log('TESTSS', testing);
-    if (!this.instance) {
-      switch (environment_variables.env) {
-        case 'prod':
-          this.instance = new this(prodConfigFile);
-          break;
-        case 'test':
-          this.instance = new this(testConfigFile);
-          break;
-        default:
-          this.instance = new this(testConfigFile);
-          break;
-      }
+  static init(version?: string): void {
+    let path;
+    if (version) {
+      path = `./files/${environment_variables.env}.v${version}.config.json`;
+    } else {
+      path = `./files/${environment_variables.env}.config.json`;
     }
+
+    const configFile = require(path);
+    this.instance = new this(configFile);
+    rimsConfigInit(Config.getInstance().getConfig().rims);
   }
 
   static getInstance(): Config {
@@ -63,7 +56,7 @@ class Config {
   }
 
   getConfig = () => {
-    return this.config.default;
+    return this.config;
   }
 }
 

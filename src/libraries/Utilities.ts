@@ -1,5 +1,4 @@
 import { Schema } from 'mongoose';
-import _ from 'lodash';
 import { ColumnsConfig, Index } from './Global.interfaces';
 import { GenericObject } from './Global.types';
 
@@ -58,8 +57,8 @@ export const schemaObjectBuilder = (columns: ColumnsConfig[]) => {
   return schemaObject;
 };
 
-export const schemaGenerator = (base: GenericObject, version: string, newProperties?: GenericObject): Schema => {
-  const schema = new Schema(base);
+export const schemaGenerator = (base: GenericObject, version: string, strict = true, newProperties?: GenericObject): Schema => {
+  const schema = new Schema(base, { strict });
   schema.add({
     schema_version: {
       type: String,

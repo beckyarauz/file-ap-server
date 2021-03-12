@@ -1,18 +1,12 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { GenericObject, ReferenceId } from '../../libraries/Global.types';
 import { generateIndexes, schemaGenerator, schemaObjectBuilder } from '../../libraries/Utilities';
-import { columns, indexes, version } from './rims.config';
 
-export interface IRim {
-  code: string;
-  width: number;
-  height: string;
-  diameter: number;
-  material: string;
-  onePiece: boolean;
+export interface IRim extends GenericObject {
 }
 
-export interface IRimModel extends Document, IRim {
+export interface IRimModel extends IRim, Document {
+  code: string;
   schema_version: string;
   versions?: ReferenceId[];
 }
@@ -24,32 +18,62 @@ export interface IRimPolicy extends IRim {
 export interface IRimPolicyModel extends IRimModel, IRimPolicy {
 }
 
-const rimSchemaObject: GenericObject = schemaObjectBuilder(columns);
+let rimSchemaObject: GenericObject;
+let RimSchema: Schema;
+let RimPolicySchema: Schema;
+let RimModel: mongoose.Model<any>;
+let RimPolicyModel: mongoose.Model<any>;
 
-export const RimSchema: Schema = schemaGenerator(
-  rimSchemaObject,
-  version,
-  {
-    versions: {
-      type: [mongoose.Types.ObjectId],
-      ref: 'RimPolicy',
-      default: []
+export const init = (config?: any) => {
+  delete mongoose.connection.models.RimPolicy;
+  delete mongoose.connection.models.Rim;
+  rimSchemaObject = schemaObjectBuilder(config.fileColumns);
+  RimSchema = schemaGenerator(
+    rimSchemaObject,
+    config.schema_version,
+    true,
+    {
+      versions: {
+        type: [mongoose.Types.ObjectId],
+        ref: 'RimPolicy',
+        default: []
+      }
+    });
+  RimPolicySchema = schemaGenerator(
+    rimSchemaObject,
+    config.schema_version,
+    false,
+    {
+      identifier: {
+        type: mongoose.Types.ObjectId
+      }
+    });
+  generateIndexes(RimSchema, [
+    {
+      index: { code: 1 },
+      options: { unique: true }
     }
-  });
+  ]);
+  generateIndexes(RimPolicySchema, [
+    {
+      index: { identifier: 1 },
+    },
+    {
+      index: { code: 1 },
+    },
+    {
+      index: { identifier: 1, code: 1, schema_version: 1 },
+      options: { unique: true }
+    },
+  ]);
+  RimPolicyModel = mongoose.model<any>('RimPolicy', RimPolicySchema);
+  RimModel = mongoose.model<any>('Rim', RimSchema);
+};
 
-// TODO: define Policy class
-export const RimPolicySchema: Schema = schemaGenerator(
-  rimSchemaObject,
-  version,
-  {
-    identifier: {
-      type: mongoose.Types.ObjectId
-    }
-  });
-
-generateIndexes(RimSchema, indexes.rim);
-generateIndexes(RimPolicySchema, indexes.rim_policy);
-
-export const RimModel = mongoose.model<IRimModel>('Rim', RimSchema);
-export const RimPolicyModel = mongoose.model<IRimPolicyModel>('RimPolicy', RimPolicySchema);
+export {
+  RimSchema,
+  RimPolicySchema,
+  RimModel,
+  RimPolicyModel
+};
 

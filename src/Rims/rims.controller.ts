@@ -10,10 +10,6 @@ export default class RimsController {
     try {
       const parser: RimsFileParser = new RimsFileParser(req);
       const rows: RowData[] = await parser.parse();
-      // TODO: remove
-      rows.length = 10;
-      rows[1].one_piece = 'X';
-      // TODO: remove - end
       const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
       const validDocs: RowData[] = validator.validate();
       await (new RimsHelper(validDocs)).handleInsertionAndUpdate();

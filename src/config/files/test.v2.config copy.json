@@ -1,0 +1,92 @@
+{
+  "rims": {
+    "nonUpdatableFields": ["code"],
+    "nonRemovableFields": [
+      "code",
+      "_id",
+      "__v",
+      "schema_version",
+      "identifier"
+    ],
+    "schema_version": "test-2",
+    "fileColumns": [
+      {
+        "name": "code",
+        "pattern": "^[0-9]{5}$",
+        "type": "string",
+        "size": 5,
+        "order": 1,
+        "schemaConfig": {
+          "field": "code",
+          "options": {
+            "required": true
+          }
+        }
+      },
+      {
+        "name": "width",
+        "pattern": "^\\d{1,2}.\\d{2}$",
+        "type": "number",
+        "size": 5,
+        "order": 2,
+        "schemaConfig": {
+          "field": "width"
+        }
+      },
+      {
+        "name": "height",
+        "pattern": "^[A-Z]{1}$",
+        "type": "string",
+        "size": 1,
+        "order": 3,
+        "schemaConfig": {
+          "field": "height"
+        }
+      },
+      {
+        "name": "diameter",
+        "pattern": "^\\d{2}$",
+        "type": "number",
+        "size": 2,
+        "order": 5,
+        "schemaConfig": {
+          "field": "diameter"
+        }
+      },
+      {
+        "name": "one_piece",
+        "pattern": "^[xX]{1}$",
+        "type": "boolean",
+        "config": {
+          "true": "X",
+          "false": "x"
+        },
+        "size": 1,
+        "order": 4,
+        "schemaConfig": {
+          "field": "isOnePiece"
+        }
+      },
+      {
+        "name": "material",
+        "pattern": "^[SL]{1}$",
+        "type": "string",
+        "size": 1,
+        "order": 6,
+        "schemaConfig": {
+          "field": "material"
+        }
+      },
+      {
+        "name": "random_field",
+        "pattern": "^(true|false)$",
+        "type": "boolean",
+        "size": 5,
+        "order": 7,
+        "schemaConfig": {
+          "field": "random_field"
+        }
+      }
+    ]
+  }
+}
