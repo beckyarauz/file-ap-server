@@ -9,7 +9,10 @@
         "size": 5,
         "order": 1,
         "schemaConfig": {
-          "required": true
+          "field": "code",
+          "options": {
+            "required": true
+          }
         }
       },
       {
@@ -17,21 +20,30 @@
         "pattern": "/^\\d{1,2}.\\d{2}$/",
         "type": "number",
         "size": 5,
-        "order": 2
+        "order": 2,
+        "schemaConfig": {
+          "field": "width"
+        }
       },
       {
         "name": "height",
         "pattern": "/^[A-Z]{1}$/",
         "type": "string",
         "size": 1,
-        "order": 3
+        "order": 3,
+        "schemaConfig": {
+          "field": "height"
+        }
       },
       {
         "name": "diameter",
         "pattern": "/^\\d{2}$/",
         "type": "number",
         "size": 2,
-        "order": 5
+        "order": 5,
+        "schemaConfig": {
+          "field": "diameter"
+        }
       },
       {
         "name": "one_piece",
@@ -42,14 +54,20 @@
           "false": "x"
         },
         "size": 1,
-        "order": 4
+        "order": 4,
+        "schemaConfig": {
+          "field": "isOnePiece"
+        }
       },
       {
         "name": "material",
         "pattern": "/^[SL]{1}$/",
         "type": "string",
         "size": 1,
-        "order": 6
+        "order": 6,
+        "schemaConfig": {
+          "field": "material"
+        }
       }
     ]
   }
