@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { environment_variables } from '../config/config';
 import { logger } from '../config/logger';
 import APIError from './APIError';
 import { RowData } from './Global.interfaces';
@@ -7,7 +8,7 @@ import { Validator, ValidatorResult } from './SchemaValidator';
 export class DocumentsValidator<V extends Validator>{
   private documents: RowData[];
   private validator: V;
-  private tolerance = parseFloat(process.env.DOCUMENT_TOLERANCE);
+  private tolerance = environment_variables.tolerance;
   private validLines: RowData[] = [];
   private invalidLines: RowData[] = [];
 
@@ -19,7 +20,7 @@ export class DocumentsValidator<V extends Validator>{
   private isWithinTolerance = (): void => {
     const size = this.documents.length;
     const invalidAmount = Math.round(size * this.tolerance / 100);
-    const isDocumentInvalid = this.invalidLines.length >= invalidAmount;
+    const isDocumentInvalid = this.invalidLines.length > invalidAmount;
 
     if (isDocumentInvalid) {
       throw new APIError('Document is invalid', httpStatus.BAD_REQUEST);

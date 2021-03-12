@@ -8,11 +8,13 @@ const res = dotenv.config();
 interface Environment {
   env: string;
   silent_logger: boolean;
+  tolerance: number;
 }
 
 export const environment_variables: Environment = {
   env: process.env.NODE_ENV,
   silent_logger: booleanTransformer(process.env.LOGGER_SILENCE),
+  tolerance: parseFloat(process.env.DOCUMENT_TOLERANCE),
 };
 class Config {
   private static instance: any;

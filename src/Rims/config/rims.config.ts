@@ -1,5 +1,5 @@
-import { ColumnsConfig, Indexes } from '../../libraries/Global.interfaces';
 import Config from '../../config/config';
+import { ColumnsConfig, Indexes } from '../../libraries/Global.interfaces';
 
 const config = Config.getInstance().getConfig().rims;
 
