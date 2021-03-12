@@ -36,12 +36,12 @@ export const generateTypeJoiValidatorSchema = (columns: ColumnsData[]): JoiValid
         keys[element.name] = Joi.number();
         break;
       default:
-        throw new Error(`Type not supported. Type: ${element.type}`)
+        throw new Error(`Type not supported. Type: ${element.type}`);
         break;
     }
   }
   return Joi.object().keys(keys);
-  };
+};
 
 export const generateStringJoiValidatorSchema = (columns: ColumnsData[]): JoiValidator => {
   const keys: { [key: string]: any } = {};

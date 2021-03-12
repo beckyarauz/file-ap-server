@@ -1,20 +1,19 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import httpStatus from 'http-status';
 import APIError from './src/libraries/APIError';
 import { logger } from './src/config/logger';
 import appRouter from './src/api/routes';
 import createDB from './src/config/database';
-import config from './src/config/config';
-
-console.log('MY CONF', config);
+import Config from './src/config/config';
 
 process.on('unhandledRejection', (exception: Error) => {
   logger.error('unhandled-promise-rejection', exception);
 });
 
-dotenv.config();
+Config.init();
+const d = Config.getInstance();
+console.log(d.getConfig());
 
 createDB();
 
