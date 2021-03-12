@@ -20,11 +20,11 @@ environment_variables.tolerance = 20;
 
 const initialize = async (version?: string) => {
   try {
-      Config.init(version);
-      createDB();
-    } catch (e) {
-      console.error(e);
-    }
+    Config.init(version);
+    createDB();
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 const clear = async (version?: string) => {
@@ -34,146 +34,146 @@ const clear = async (version?: string) => {
 
 const reconnect = async (version?: string) => {
   return new Promise<void>((resolve, reject) => {
-      mongoose.disconnect().then(() => {
-          Config.init(version);
-          createDB();
-          resolve();
-        }).catch((e) => {
-          reject(e.message);
-        });
-    });
+    mongoose.disconnect().then(() => {
+      Config.init(version);
+      createDB();
+      resolve();
+    }).catch((e) => {
+        reject(e.message);
+      });
+  });
 };
 
 describe('[RIMS]', async () => {
   let helper: RimsHelper;
   const brokenDocsArray = [
         { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
-    ];
+  ];
 
   before(() => {
-      initialize();
-      const testDocs = docs.concat(brokenDocsArray);
-      helper = new RimsHelper(testDocs);
-    });
+    initialize();
+    const testDocs = docs.concat(brokenDocsArray);
+    helper = new RimsHelper(testDocs);
+  });
 
   it('Saving Documents - should save documents', async () => {
-      const test = ['00012 5.00Jx13S'];
-      const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
-      const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-      const valids: RowData[] = validator.validate();
-      const rimsHelper = new RimsHelper(valids);
-      const result = await rimsHelper.handleInsertionAndUpdate();
-      const rimDal = new RimsDAL();
-      const docs = await rimDal.find({}).lean().exec();
+    const test = ['00012 5.00Jx13S'];
+    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
+    const valids: RowData[] = validator.validate();
+    const rimsHelper = new RimsHelper(valids);
+    const result = await rimsHelper.handleInsertionAndUpdate();
+    const rimDal = new RimsDAL();
+    const docs = await rimDal.find({}).lean().exec();
 
-      expect(docs.length).to.equal(1);
-      expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
-          schema_version: 'test-1',
-          code: '00012',
-          width: '5',
-          height: 'J',
-          diameter: '13',
-          onePiece: false,
-          material: 'S',
-          versions: [],
-        }]);
-    });
+    expect(docs.length).to.equal(1);
+    expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
+      schema_version: 'test-1',
+      code: '00012',
+      width: '5',
+      height: 'J',
+      diameter: '13',
+      onePiece: false,
+      material: 'S',
+      versions: [],
+    }]);
+  });
 
   it('Versions - should update document to current version and save policy', async () => {
-      await reconnect('2');
+    await reconnect('2');
 
-      const test = ['00012 5.00Jx13Strue'];
-      const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
-      const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-      const valids: RowData[] = validator.validate();
-      const rimsHelper = new RimsHelper(valids);
-      const result = await rimsHelper.handleInsertionAndUpdate();
-      const rimDal = new RimsDAL();
-      const docs = await rimDal.find({}).lean().exec();
+    const test = ['00012 5.00Jx13Strue'];
+    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
+    const valids: RowData[] = validator.validate();
+    const rimsHelper = new RimsHelper(valids);
+    const result = await rimsHelper.handleInsertionAndUpdate();
+    const rimDal = new RimsDAL();
+    const docs = await rimDal.find({}).lean().exec();
 
-      expect(docs.length).to.equal(1);
-      const policy = await rimDal.findPolicy({ code: '00012', schema_version: 'test-1' }).lean().exec();
+    expect(docs.length).to.equal(1);
+    const policy = await rimDal.findPolicy({ code: '00012', schema_version: 'test-1' }).lean().exec();
 
-      expect(policy).excluding(['_id', '__v']).to.deep.equal(
-          {
-            schema_version: 'test-1',
-            identifier: docs[0]._id,
-            code: '00012',
-            width: '5',
-            height: 'J',
-            diameter: '13',
-            onePiece: false,
-            material: 'S',
-          }
+    expect(policy).excluding(['_id', '__v']).to.deep.equal(
+      {
+        schema_version: 'test-1',
+        identifier: docs[0]._id,
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+      }
         );
-      expect(docs.length).to.equal(1);
-      expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
-          schema_version: 'test-2',
-          code: '00012',
-          width: '5',
-          height: 'J',
-          diameter: '13',
-          onePiece: false,
-          material: 'S',
-          randomField: true,
-          versions: [policy._id],
-        }]);
-    });
+    expect(docs.length).to.equal(1);
+    expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
+      schema_version: 'test-2',
+      code: '00012',
+      width: '5',
+      height: 'J',
+      diameter: '13',
+      onePiece: false,
+      material: 'S',
+      randomField: true,
+      versions: [policy._id],
+    }]);
+  });
 
   it('Versions - should remove unexistent fields in schema of rim document and save policy', async () => {
-      await reconnect('3');
+    await reconnect('3');
 
-      const test = ['00012 5.00Jx13Strue'];
-      const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
-      const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-      const valids: RowData[] = validator.validate();
-      const rimsHelper = new RimsHelper(valids);
-      const result = await rimsHelper.handleInsertionAndUpdate();
-      const rimDal = new RimsDAL();
-      const docs = await rimDal.find({}).lean().exec();
+    const test = ['00012 5.00Jx13Strue'];
+    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
+    const valids: RowData[] = validator.validate();
+    const rimsHelper = new RimsHelper(valids);
+    const result = await rimsHelper.handleInsertionAndUpdate();
+    const rimDal = new RimsDAL();
+    const docs = await rimDal.find({}).lean().exec();
 
-      expect(docs.length).to.equal(1);
-      const policies = await rimDal.findPolicies({ code: '00012' }).lean().exec();
+    expect(docs.length).to.equal(1);
+    const policies = await rimDal.findPolicies({ code: '00012' }).lean().exec();
 
-      expect(policies).excluding(['_id', '__v']).to.deep.equalInAnyOrder([
-          {
-            schema_version: 'test-1',
-            identifier: docs[0]._id,
-            code: '00012',
-            width: '5',
-            height: 'J',
-            diameter: '13',
-            onePiece: false,
-            material: 'S',
-          },
-          {
-            schema_version: 'test-2',
-            identifier: docs[0]._id,
-            code: '00012',
-            width: '5',
-            height: 'J',
-            diameter: '13',
-            onePiece: false,
-            material: 'S',
-            randomField: true,
-          }
-        ]);
-      expect(docs.length).to.equal(1);
-      expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
-          schema_version: 'test-3',
-          code: '00012',
-          width: '5',
-          height: 'J',
-          diameter: '13',
-          onePiece: false,
-          material: 'S',
-          anotherField: true,
-          versions: policies.map((policy: any) => policy._id),
-        }]);
-    });
+    expect(policies).excluding(['_id', '__v']).to.deep.equalInAnyOrder([
+      {
+        schema_version: 'test-1',
+        identifier: docs[0]._id,
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+      },
+      {
+        schema_version: 'test-2',
+        identifier: docs[0]._id,
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+        randomField: true,
+      }
+    ]);
+    expect(docs.length).to.equal(1);
+    expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
+      schema_version: 'test-3',
+      code: '00012',
+      width: '5',
+      height: 'J',
+      diameter: '13',
+      onePiece: false,
+      material: 'S',
+      anotherField: true,
+      versions: policies.map((policy: any) => policy._id),
+    }]);
+  });
 
   after(async () => {
-      await clear();
-      mongoose.disconnect();
-    });
+    await clear();
+    mongoose.disconnect();
+  });
 });

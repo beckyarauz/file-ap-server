@@ -19,26 +19,7 @@ export const init = (config: any) => {
   nonUpdatableFields = config.nonUpdatableFields;
   nonRemovableFields = config.nonRemovableFields;
   columns = config.fileColumns;
-  indexes = {
-    rim: [
-      {
-        index: { code: 1 },
-        options: { unique: true }
-      }
-    ],
-    rim_policy: [
-      {
-        index: { identifier: 1 },
-      },
-      {
-        index: { code: 1 },
-      },
-      {
-        index: { identifier: 1, code: 1, schema_version: 1 },
-        options: { unique: true }
-      },
-    ],
-  };
+  indexes = config.indexes;
   getRimsConfig = () => {
     return configuration;
   };
