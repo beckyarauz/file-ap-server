@@ -19,9 +19,31 @@ export interface JoiValidator extends Validator, Joi.ObjectSchema {
 interface ColumnsData {
   name: string;
   pattern: RegExp;
+  type?: string;
 }
 
-export const generateJoiValidatorSchema = (columns: ColumnsData[]): JoiValidator => {
+export const generateTypeJoiValidatorSchema = (columns: ColumnsData[]): JoiValidator => {
+  const keys: { [key: string]: any } = {};
+  for (const element of columns) {
+    switch (element.type) {
+      case 'string':
+        keys[element.name] = Joi.string().regex(element.pattern);
+        break;
+      case 'number':
+        keys[element.name] = Joi.number();
+        break;
+      case 'boolean':
+        keys[element.name] = Joi.number();
+        break;
+      default:
+        throw new Error(`Type not supported. Type: ${element.type}`)
+        break;
+    }
+  }
+  return Joi.object().keys(keys);
+  };
+
+export const generateStringJoiValidatorSchema = (columns: ColumnsData[]): JoiValidator => {
   const keys: { [key: string]: any } = {};
   for (const element of columns) {
     keys[element.name] = Joi.string().regex(element.pattern);

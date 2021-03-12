@@ -1,4 +1,4 @@
-import { generateJoiValidatorSchema, Validator } from '../../libraries/SchemaValidator';
+import { generateStringJoiValidatorSchema, Validator } from '../../libraries/SchemaValidator';
 import { columns } from '../config/rims.config';
 
-export const validator: Validator = generateJoiValidatorSchema(columns);
+export const validator: Validator = generateStringJoiValidatorSchema(columns);

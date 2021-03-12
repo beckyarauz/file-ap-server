@@ -4,7 +4,7 @@ import { columns as rimsColumns } from '../config/rims.config';
 
 const rimsBooleanTransformer = (value: string, oldObject: any, newObject: any, name: string) => {
   const settings = rimsColumns.find(col => col.name === name);
-  const config = settings ? settings.config : null;
+  const config = settings ? settings.parsingConfig : null;
   return booleanTransformer(value, config);
 };
 

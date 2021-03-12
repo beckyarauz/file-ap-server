@@ -41,7 +41,7 @@ export const columns: ColumnsConfig[] = [
     name: 'one_piece',
     pattern: /^[xX]{1}$/,
     type: 'boolean',
-    config: {
+    parsingConfig: {
       true: 'X',
       false: 'x'
     },

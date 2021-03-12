@@ -2,7 +2,8 @@ import { GenericObject } from './Global.types';
 
 export interface ColumnsConfig extends FileColumns {
   schemaConfig?: any;
-  config?: any;
+  parsingConfig?: any;
+  validatorConfig?: any;
 }
 
 export interface RowData { [key: string]: boolean | number | string; }
