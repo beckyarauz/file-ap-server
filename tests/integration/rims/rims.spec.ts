@@ -7,7 +7,7 @@ import Config, { environment_variables } from '../../../src/config/config';
 import createDB from '../../../src/config/database';
 import { RequestFileParser } from '../../../src/libraries/FileParser';
 import { RowData } from '../../../src/libraries/Global.interfaces';
-import { getRimsColumns } from '../../../src/Rims/config/rims.config';
+import RimsConfig from '../../../src/Rims/config/rims.config';
 import { RimModel, RimPolicyModel } from '../../../src/Rims/config/rims.model';
 import { RimsDAL } from '../../../src/Rims/rims.DAL';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
@@ -18,9 +18,13 @@ chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
 environment_variables.tolerance = 20;
 
+let helper: RimsHelper;
+let rims: RimsConfig;
+
 const initialize = async (version?: string) => {
   try {
     Config.init(version);
+    rims = RimsConfig.getInstance();
     createDB();
   } catch (e) {
     console.error(e);
@@ -36,6 +40,7 @@ const reconnect = async (version?: string) => {
   return new Promise<void>((resolve, reject) => {
     mongoose.disconnect().then(() => {
       Config.init(version);
+      rims = RimsConfig.getInstance();
       createDB();
       resolve();
     }).catch((e) => {
@@ -45,9 +50,8 @@ const reconnect = async (version?: string) => {
 };
 
 describe('[RIMS]', async () => {
-  let helper: RimsHelper;
   const brokenDocsArray = [
-        { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
+    { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
 
   before(() => {
@@ -58,7 +62,7 @@ describe('[RIMS]', async () => {
 
   it('Saving Documents - should save documents', async () => {
     const test = ['00012 5.00Jx13S'];
-    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
     const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
     const valids: RowData[] = validator.validate();
     const rimsHelper = new RimsHelper(valids);
@@ -83,7 +87,7 @@ describe('[RIMS]', async () => {
     await reconnect('2');
 
     const test = ['00012 5.00Jx13Strue'];
-    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
     const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
     const valids: RowData[] = validator.validate();
     const rimsHelper = new RimsHelper(valids);
@@ -105,7 +109,7 @@ describe('[RIMS]', async () => {
         onePiece: false,
         material: 'S',
       }
-        );
+    );
     expect(docs.length).to.equal(1);
     expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([{
       schema_version: 'test-2',
@@ -124,7 +128,7 @@ describe('[RIMS]', async () => {
     await reconnect('3');
 
     const test = ['00012 5.00Jx13Strue'];
-    const rows = RequestFileParser.parseStringToObjects(test, getRimsColumns());
+    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
     const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
     const valids: RowData[] = validator.validate();
     const rimsHelper = new RimsHelper(valids);

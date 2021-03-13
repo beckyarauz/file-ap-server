@@ -1,5 +1,5 @@
 import { booleanTransformer } from '../libraries/Utilities';
-import { init as rimsConfigInit } from '../Rims/config/rims.config';
+import RimsConfig from '../Rims/config/rims.config';
 
 const dotenv = require('dotenv');
 const res = dotenv.config();
@@ -45,7 +45,8 @@ class Config {
 
     const configFile = require(path);
     this.instance = new this(configFile);
-    rimsConfigInit(Config.getInstance().getConfig().rims);
+    // rimsConfigInit(Config.getInstance().getConfig().rims);
+    RimsConfig.init(Config.getInstance().getConfig().rims);
   }
 
   static getInstance(): Config {

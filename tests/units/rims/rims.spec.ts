@@ -3,6 +3,8 @@ import chaiExclude from 'chai-exclude';
 import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
 import Config, { environment_variables } from '../../../src/config/config';
+import { toCamel } from '../../../src/libraries/Utilities';
+import RimsConfig from '../../../src/Rims/config/rims.config';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
 import { RimsDocumentsValidator } from '../../../src/Rims/Validator/rims.Validator';
 import docs from '../../data/v1/rims.rawDocuments.all.v1';
@@ -21,15 +23,18 @@ const initialize = async (version?: string) => {
   }
 };
 
+initialize();
+
 describe('[RIMS]', async () => {
   let helper: RimsHelper;
+  let rimsConfig: RimsConfig;
   const brokenDocsArray = [
     { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
   const invalidDocsAllowedAmmount = Math.round((validDocs.length + invalidDocs.length) * environment_variables.tolerance / 100);
 
   before(() => {
-    initialize();
+    rimsConfig = RimsConfig.getInstance();
     const testDocs = docs.concat(brokenDocsArray);
     helper = new RimsHelper(testDocs);
   });
@@ -131,13 +136,13 @@ describe('[RIMS]', async () => {
 
   it('RimsHelper - should get rims document properties', async () => {
     const helper = new RimsHelper(docs);
-    const properties = RimsHelper.getProperties();
+    const properties = rimsConfig.getRimsColumns().map(col => toCamel(col.name));
     expect(properties).to.deep.equalInAnyOrder(['code', 'width', 'height', 'diameter', 'onePiece', 'material']);
   });
 
   it('RimsHelper - should get updatableRimProperties', async () => {
     const helper = new RimsHelper(docs);
-    const properties = RimsHelper.getProperties();
+    const properties = rimsConfig.getRimsColumns().map(col => toCamel(col.name));
     expect(properties).to.deep.equalInAnyOrder(['code', 'width', 'height', 'diameter', 'onePiece', 'material']);
   });
 
