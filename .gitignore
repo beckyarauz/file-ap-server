@@ -4,3 +4,7 @@ nodemon.json
 dist/
 .env
 .DS_Store
+
+build/
+
+webpack.config.js

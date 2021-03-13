@@ -1,11 +1,11 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import appRouter from './src/api/routes';
-import Config from './src/config/config';
-import createDB from './src/config/database';
-import { logger } from './src/config/logger';
-import APIError from './src/libraries/APIError';
+import appRouter from './api/routes';
+import Config from './config/config';
+import createDB from './config/database';
+import { logger } from './config/logger';
+import APIError from './libraries/APIError';
 
 process.on('unhandledRejection', (exception: Error) => {
   logger.error('unhandled-promise-rejection', exception);
