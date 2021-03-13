@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiExclude from 'chai-exclude';
 import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
-import { environment_variables } from '../../../src/config/config';
+import Config, { environment_variables } from '../../../src/config/config';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
 import { RimsDocumentsValidator } from '../../../src/Rims/Validator/rims.Validator';
 import docs from '../../data/v1/rims.rawDocuments.all.v1';
@@ -13,6 +13,14 @@ chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
 environment_variables.tolerance = 20;
 
+const initialize = async (version?: string) => {
+  try {
+    Config.init(version);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 describe('[RIMS]', async () => {
   let helper: RimsHelper;
   const brokenDocsArray = [
@@ -21,6 +29,7 @@ describe('[RIMS]', async () => {
   const invalidDocsAllowedAmmount = Math.round((validDocs.length + invalidDocs.length) * environment_variables.tolerance / 100);
 
   before(() => {
+    initialize();
     const testDocs = docs.concat(brokenDocsArray);
     helper = new RimsHelper(testDocs);
   });

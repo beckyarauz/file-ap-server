@@ -5,7 +5,7 @@ import { RowData } from '../libraries/Global.interfaces';
 import { ReferenceId } from '../libraries/Global.types';
 import { ObjectMapper } from '../libraries/ObjectMapper';
 import { toCamel } from '../libraries/Utilities';
-import { getRimsColumns, getRimsVersion, nonRemovableFields, nonUpdatableFields } from './config/rims.config';
+import { getnonRemovableFields, getnonUpdatableFields, getRimsColumns, getRimsVersion } from './config/rims.config';
 import { IRim, IRimModel, IRimPolicyModel, RimModel } from './config/rims.model';
 import { generateMapper } from './Mapper/rims.mapper';
 import { RimsDAL } from './rims.DAL';
@@ -29,7 +29,7 @@ export class RimsHelper {
   getUpdatableRimProperties = () => {
     const props = RimsHelper.getProperties();
 
-    return props.filter(prop => !nonUpdatableFields.includes(prop));
+    return props.filter(prop => !getnonUpdatableFields().includes(prop));
   }
 
   hasCurrentVersion = (doc: IRimModel | LeanDocument<IRimModel>): boolean => {
@@ -64,7 +64,7 @@ export class RimsHelper {
   }
 
   getNonRemovableFields = () => {
-    return nonRemovableFields;
+    return getnonRemovableFields();
   }
 
   buildVersionsList = (docVersions: ReferenceId[], oldVersionId: string): ReferenceId[] => {

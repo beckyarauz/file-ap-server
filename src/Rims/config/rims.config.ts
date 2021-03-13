@@ -12,6 +12,7 @@ let getRimsColumns: () => ColumnsConfig[];
 let getRimsIndexes: () => Indexes;
 let getRimsVersion: () => string;
 let getnonRemovableFields: () => string[];
+let getnonUpdatableFields: () => string[];
 
 export const init = (config: any) => {
   configuration = config;
@@ -51,4 +52,5 @@ export {
   getRimsIndexes,
   getRimsVersion,
   getnonRemovableFields,
+  getnonUpdatableFields
 };

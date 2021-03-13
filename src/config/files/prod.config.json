@@ -1,5 +1,6 @@
 {
   "rims": {
+    "tolerance": 5,
     "nonUpdatableFields": ["code"],
     "nonRemovableFields": [
       "code",

@@ -39,8 +39,8 @@ const reconnect = async (version?: string) => {
       createDB();
       resolve();
     }).catch((e) => {
-        reject(e.message);
-      });
+      reject(e.message);
+    });
   });
 };
 

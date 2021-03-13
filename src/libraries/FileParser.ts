@@ -67,10 +67,11 @@ export class RequestFileParser {
   parseRequestFile = async (): Promise<RowData[]> => {
     try {
       this.dataArray = await RequestFileParser.parseRequestFileToArray(this.request, this.form) as unknown as string[];
-      logger.info('file-upload-handler', `File upload started. Lines Amount: ${this.dataArray.length}`);
+      logger.info('file-upload-handler-count', `File lines size: ${this.dataArray.length}`);
       this.rows = RequestFileParser.parseStringToObjects(this.dataArray, this.columns);
       return this.rows;
     } catch (e) {
+      logger.error('file-parser-error', e);
       throw e;
     }
   }

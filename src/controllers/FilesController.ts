@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import APIError from '../libraries/APIError';
 import { logger } from '../config/logger';
+import APIError from '../libraries/APIError';
 import RimsController from '../Rims/rims.controller';
 import TimeSnapsController from '../Timesnaps/timesnaps.controller';
-
 
 export default class FilesController {
   static async handleFileUpload(req: Request, res: Response, next: NextFunction) {
     const { fileType } = req.params;
+    logger.info('file-upload-handler', `File upload started`);
     switch (fileType) {
       case 'rims':
         await RimsController.handleFileUpload(req);
