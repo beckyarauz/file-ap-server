@@ -3,3 +3,4 @@ package-lock.json
 nodemon.json
 dist/
 .env
+.DS_Store
