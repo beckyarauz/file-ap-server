@@ -5,6 +5,7 @@ const tsProject = ts.createProject("tsconfig.json");
 
 const files = [
     './tests/**/*.dat',
+    './src/**/*.json',
   ];
 
 gulp.task('copy', () => {
@@ -16,5 +17,5 @@ gulp.task('compile', () => {
     return tsProject.src().pipe(tsProject()).js.pipe(gulp.dest("dist"));
   });
 
-gulp.task('default', gulp.series('compile'), (done) => {
+gulp.task('default', gulp.series('compile', 'copy'), (done) => {
 });
