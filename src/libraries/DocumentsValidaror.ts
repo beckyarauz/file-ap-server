@@ -1,5 +1,4 @@
 import httpStatus from 'http-status';
-import { environment_variables } from '../config/config';
 import { logger } from '../config/logger';
 import APIError from './APIError';
 import { RowData } from './Global.interfaces';
@@ -8,13 +7,14 @@ import { Validator, ValidatorResult } from './SchemaValidator';
 export class DocumentsValidator<V extends Validator>{
   private documents: RowData[];
   private validator: V;
-  private tolerance = environment_variables.tolerance;
+  private tolerance: number;
   private validLines: RowData[] = [];
   private invalidLines: RowData[] = [];
 
-  constructor(documents: RowData[], validator: V) {
+  constructor(documents: RowData[], validator: V, tolerance: number) {
     this.documents = documents;
     this.validator = validator;
+    this.tolerance = tolerance;
   }
 
   private isWithinTolerance = (): void => {
