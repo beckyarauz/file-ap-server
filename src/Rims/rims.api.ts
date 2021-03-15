@@ -8,6 +8,7 @@ rimsRoutes.post('/upload', async (req: Request, res: Response, next: NextFunctio
   try {
     logger.info('file-upload-handler-start', `File upload started. TimeStamp: ${Date.now()}`);
     const result = await RimsController.handleFileUpload(req);
+    // TODO; enhance logger to accept custom fields
     logger.info('file-upload-handler-end', `File upload ended. TimeStamp: ${Date.now()}, ${JSON.stringify(result)}`);
     res.json({
       message: 'success',
