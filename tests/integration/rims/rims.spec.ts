@@ -4,7 +4,6 @@ import chaiHttp from 'chai-http';
 import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
 import mongoose from 'mongoose';
-import sinon from 'sinon';
 import request from 'supertest';
 import { app, createApi } from '../../../src/api/app';
 import Config from '../../../src/config/config';
@@ -55,10 +54,8 @@ describe('[RIMS]', async () => {
   const brokenDocsArray = [
     { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
-  let sandbox: sinon.SinonSandbox;
 
   before(async () => {
-    sandbox = sinon.createSandbox();
     initialize();
     await clear();
     const testDocs = docs.concat(brokenDocsArray);
@@ -186,7 +183,6 @@ describe('[RIMS]', async () => {
   });
 
   afterEach(() => {
-    sandbox.restore();
   });
 
   after(async () => {
