@@ -1,5 +1,4 @@
 import * as winston from 'winston';
-import { environment_variables } from './config';
 
 interface LoggerDefaultFields {
   logLevel: string;
@@ -25,12 +24,13 @@ class Logger {
     this.logLevels = { error: 0, warning: 1, info: 2, debug: 3 };
     this.logLevelCode = this.logLevels[this.logLevel];
 
-    const consoleTransport = new winston.transports.Console({
-      level: this.logLevel,
-      handleExceptions: true,
-      silent: environment_variables.silent_logger
-    },
-    );
+    // const consoleTransport = new winston.transports.Console({
+    //   level: this.logLevel,
+    //   handleExceptions: true,
+    //   silent: environment_variables.silent_logger
+    // });
+
+    const consoleTransport = new winston.transports.Console();
 
     this.winstonLogger = winston.createLogger({
       levels: this.logLevels,
