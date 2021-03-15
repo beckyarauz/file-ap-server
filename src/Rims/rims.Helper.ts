@@ -130,7 +130,6 @@ export class RimsHelper {
 
   handleInsertionAndUpdate = async (): Promise<any[]> => {
     try {
-      // const codesArray = this.documents.map(doc => doc.code);
       const successDocs: any[] = [];
       for (const document of this.documents) {
         const dbDoc = (await this.rimsDAL.findOne({ code: document.code }).lean().exec()) as IRimModel;
