@@ -8,7 +8,7 @@ import TimeSnapsController from '../Timesnaps/timesnaps.controller';
 export default class FilesController {
   static async handleFileUpload(req: Request, res: Response, next: NextFunction) {
     const { fileType } = req.params;
-    logger.info('file-upload-handler', `File upload started`);
+    logger.info('file-upload-handler-start', `File upload started`);
     switch (fileType) {
       case 'rims':
         await RimsController.handleFileUpload(req);
@@ -21,5 +21,6 @@ export default class FilesController {
         throw new APIError('File type not supported', httpStatus.BAD_REQUEST);
         break;
     }
+    logger.info('file-upload-handler-end', `File upload ended`);
   }
 }
