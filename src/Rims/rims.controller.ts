@@ -6,9 +6,15 @@ export default class RimsController {
   static async handleFileUpload(req: Request) {
     try {
       const rows = await RimsHelper.handleDocumentParseFromRequest(req);
-      const validDocs = RimsHelper.validateDocuments(rows);
-      await (new RimsHelper(validDocs)).handleInsertionAndUpdate();
-      return;
+      const { valid, invalid } = RimsHelper.validateDocuments(rows);
+      const { savedDocs, updatedDocs } = await (new RimsHelper(valid)).handleInsertionAndUpdate();
+      return {
+        valid: valid.length,
+        invalid: invalid.length,
+        file_total: rows.length,
+        saved: savedDocs.length,
+        updated: updatedDocs.length,
+      };
     } catch (e) {
       logger.error('rims-handle-file-upload', e);
       throw e;

@@ -98,7 +98,11 @@ export class RimsHelper {
     // handle non overwritable fields
     updateDoc.code = doc.code;
 
-    return await RimModel.replaceOne({ code: doc.code }, updateDoc);
+    await RimModel.replaceOne({ code: doc.code }, updateDoc);
+
+    const result = this.rimsDAL.findOne({ code: doc.code }).lean().exec();
+
+    return result;
   }
 
   updateDocumentData = async (doc: { code: string; id: ReferenceId; }) => {
@@ -128,25 +132,33 @@ export class RimsHelper {
     }
   }
 
-  handleInsertionAndUpdate = async (): Promise<any[]> => {
+  handleInsertionAndUpdate = async (): Promise<{
+    updatedDocs: any[];
+    savedDocs: any[];
+  }> => {
     try {
-      const successDocs: any[] = [];
+      const updatedDocs: any[] = [];
+      const savedDocs: any[] = [];
       for (const document of this.documents) {
         const dbDoc = (await this.rimsDAL.findOne({ code: document.code }).lean().exec()) as IRimModel;
         if (dbDoc) {
           const updatedDoc = await this.handleDocumentUpdate(dbDoc);
-          successDocs.push(updatedDoc);
+          updatedDocs.push(updatedDoc);
         } else {
           try {
             const doc = this.documents.find(doc => doc.code === document.code) as IRimModel;
             const savedDoc = await this.rimsDAL.saveRim(doc);
-            successDocs.push(savedDoc);
+            savedDocs.push(savedDoc);
           } catch (e) {
             logger.error('rims-save-rim-error', e);
           }
         }
       }
-      return successDocs;
+      const result = {
+        updatedDocs,
+        savedDocs,
+      };
+      return result;
     } catch (e) {
       console.error(e);
       logger.error('rims-insert-and-update-error', e);
@@ -160,11 +172,9 @@ export class RimsHelper {
     return rows;
   }
 
-  static validateDocuments = (rows: RowData[]): RowData[] => {
+  static validateDocuments = (rows: RowData[]): { valid: RowData[], invalid: RowData[] } => {
     const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-    const validDocs: RowData[] = validator.validate();
-
-    return validDocs;
+    return validator.validate();
   }
 }
 

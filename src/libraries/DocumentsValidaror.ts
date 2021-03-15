@@ -46,10 +46,13 @@ export class DocumentsValidator<V extends Validator>{
     }
   }
 
-  validateDocuments = (): RowData[] => {
+  validateDocuments = (): any => {
     try {
       this.validateRows();
-      return this.validLines;
+      return {
+        valid: this.validLines,
+        invalid: this.invalidLines
+      };
     } catch (e) {
       throw (e);
       return;

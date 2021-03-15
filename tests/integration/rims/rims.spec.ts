@@ -68,7 +68,14 @@ describe('[RIMS]', async () => {
       .post('/api/rims/upload')
       .attach('file', buffer, 'rims.txt')
       .expect(200, {
-        message: 'success'
+        message: 'success',
+        result: {
+          file_total: 1,
+          invalid: 0,
+          saved: 1,
+          updated: 0,
+          valid: 1,
+        }
       });
     const rimDal = new RimsDAL();
     const docs = await rimDal.find({}).lean().exec();
@@ -94,7 +101,14 @@ describe('[RIMS]', async () => {
       .post('/api/rims/upload')
       .attach('file', buffer, 'rims.txt')
       .expect(200, {
-        message: 'success'
+        message: 'success',
+        result: {
+          file_total: 1,
+          invalid: 0,
+          saved: 0,
+          updated: 1,
+          valid: 1,
+        }
       });
     const rimDal = new RimsDAL();
     const docs = await rimDal.find({}).lean().exec();
@@ -136,7 +150,14 @@ describe('[RIMS]', async () => {
       .post('/api/rims/upload')
       .attach('file', buffer, 'rims.txt')
       .expect(200, {
-        message: 'success'
+        message: 'success',
+        result: {
+          file_total: 1,
+          invalid: 0,
+          saved: 0,
+          updated: 1,
+          valid: 1,
+        }
       });
 
     const rimDal = new RimsDAL();
@@ -180,6 +201,89 @@ describe('[RIMS]', async () => {
       anotherField: true,
       versions: policies.map((policy: any) => policy._id),
     }]);
+  });
+
+  it('Should update document if update is from same version', async () => {
+    const buffer = Buffer.from('00012 5.00Jx13Sfalse\n00013 5.00Jx13Sfalse\n00014 5.00Jx13Sfalse\n00015 5.00Jt13Sfalse', 'utf8');
+    await request(app)
+      .post('/api/rims/upload')
+      .attach('file', buffer, 'rims.txt')
+      .expect(200, {
+        message: 'success',
+        result: {
+          file_total: 4,
+          invalid: 1,
+          saved: 2,
+          updated: 1,
+          valid: 3,
+        }
+      });
+
+    const rimDal = new RimsDAL();
+    const docs = await rimDal.find({}).lean().exec();
+
+    expect(docs.length).to.equal(3);
+    const policies = await rimDal.findPolicies({ code: '00012' }).lean().exec();
+
+    expect(policies).excluding(['_id', '__v']).to.deep.equalInAnyOrder([
+      {
+        schema_version: 'test-1',
+        identifier: docs[0]._id,
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+      },
+      {
+        schema_version: 'test-2',
+        identifier: docs[0]._id,
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+        randomField: true,
+      }
+    ]);
+
+    expect(docs).excluding(['_id', '__v']).to.deep.equalInAnyOrder([
+      {
+        schema_version: 'test-3',
+        code: '00012',
+        width: '5',
+        height: 'J',
+        diameter: '13',
+        onePiece: false,
+        material: 'S',
+        anotherField: false,
+        versions: policies.map((policy: any) => policy._id),
+      },
+      {
+        anotherField: false,
+        code: '00013',
+        diameter: '13',
+        height: 'J',
+        material: 'S',
+        onePiece: false,
+        schema_version: 'test-3',
+        versions: [],
+        width: '5',
+      },
+      {
+        anotherField: false,
+        code: '00014',
+        diameter: '13',
+        height: 'J',
+        material: 'S',
+        onePiece: false,
+        schema_version: 'test-3',
+        versions: [],
+        width: '5',
+      }
+    ]);
   });
 
   afterEach(() => {

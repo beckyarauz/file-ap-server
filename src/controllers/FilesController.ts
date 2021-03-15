@@ -8,7 +8,7 @@ import TimeSnapsController from '../Timesnaps/timesnaps.controller';
 export default class FilesController {
   static async handleFileUpload(req: Request, res: Response, next: NextFunction) {
     const { fileType } = req.params;
-    logger.info('file-upload-handler-start', `File upload started`);
+    logger.info('file-upload-handler-start', `File upload started. TimeStamp: ${Date.now()}`);
     switch (fileType) {
       case 'rims':
         await RimsController.handleFileUpload(req);
@@ -22,6 +22,6 @@ export default class FilesController {
         break;
     }
     // TODO: add result on log
-    logger.info('file-upload-handler-end', `File upload ended`);
+    logger.info('file-upload-handler-end', `File upload ended. TimeStamp: ${Date.now()}`);
   }
 }

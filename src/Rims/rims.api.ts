@@ -6,12 +6,15 @@ const rimsRoutes = express.Router();
 
 rimsRoutes.post('/upload', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await RimsController.handleFileUpload(req);
+    logger.info('file-upload-handler-start', `File upload started. TimeStamp: ${Date.now()}`);
+    const result = await RimsController.handleFileUpload(req);
+    logger.info('file-upload-handler-end', `File upload ended. TimeStamp: ${Date.now()}, ${JSON.stringify(result)}`);
     res.json({
-      message: 'success'
+      message: 'success',
+      result
     });
   } catch (e) {
-    logger.error('post-rims-api-file-upload',e);
+    logger.error('post-rims-api-file-upload', e);
     next(e);
   }
 });

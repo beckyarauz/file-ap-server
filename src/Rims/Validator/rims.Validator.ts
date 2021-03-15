@@ -13,7 +13,7 @@ export class RimsDocumentsValidator extends DocumentsValidator<Validator> {
     );
   }
 
-  validate = (): RowData[] => {
+  validate = (): { valid: RowData[], invalid: RowData[] } => {
     return this.validateDocuments();
   }
 }
