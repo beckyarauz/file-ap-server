@@ -21,6 +21,7 @@ export default class FilesController {
         throw new APIError('File type not supported', httpStatus.BAD_REQUEST);
         break;
     }
+    // TODO: add result on log
     logger.info('file-upload-handler-end', `File upload ended`);
   }
 }
