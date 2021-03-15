@@ -1,21 +1,24 @@
 import chai, { expect } from 'chai';
 import chaiExclude from 'chai-exclude';
+import chaiHttp from 'chai-http';
 import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
 import mongoose from 'mongoose';
+import sinon from 'sinon';
+import request from 'supertest';
+import { app, createApi } from '../../../src/api/app';
 import Config, { environment_variables } from '../../../src/config/config';
 import createDB from '../../../src/config/database';
-import { RequestFileParser } from '../../../src/libraries/FileParser';
-import { RowData } from '../../../src/libraries/Global.interfaces';
 import RimsConfig from '../../../src/Rims/config/rims.config';
 import { RimModel, RimPolicyModel } from '../../../src/Rims/config/rims.model';
 import { RimsDAL } from '../../../src/Rims/rims.DAL';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
-import { RimsDocumentsValidator } from '../../../src/Rims/Validator/rims.Validator';
 import docs from '../../data/v1/rims.rawDocuments.all.v1';
+
 
 chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
+chai.use(chaiHttp);
 environment_variables.tolerance = 20;
 
 let helper: RimsHelper;
@@ -26,12 +29,13 @@ const initialize = async (version?: string) => {
     Config.init(version);
     rims = RimsConfig.getInstance();
     createDB();
+    createApi();
   } catch (e) {
     console.error(e);
   }
 };
 
-const clear = async (version?: string) => {
+const clear = async (_version?: string) => {
   await RimModel.deleteMany({});
   await RimPolicyModel.deleteMany({});
 };
@@ -53,20 +57,24 @@ describe('[RIMS]', async () => {
   const brokenDocsArray = [
     { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
+  let sandbox: sinon.SinonSandbox;
 
-  before(() => {
+  before(async () => {
+    sandbox = sinon.createSandbox();
     initialize();
+    await clear();
     const testDocs = docs.concat(brokenDocsArray);
     helper = new RimsHelper(testDocs);
   });
 
   it('Saving Documents - should save documents', async () => {
-    const test = ['00012 5.00Jx13S'];
-    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
-    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-    const valids: RowData[] = validator.validate();
-    const rimsHelper = new RimsHelper(valids);
-    const result = await rimsHelper.handleInsertionAndUpdate();
+    const buffer = Buffer.from('00012 5.00Jx13S', 'utf8');
+    await request(app)
+      .post('/api/rims/upload')
+      .attach('file', buffer, 'rims.txt')
+      .expect(200, {
+        message: 'success'
+      });
     const rimDal = new RimsDAL();
     const docs = await rimDal.find({}).lean().exec();
 
@@ -86,12 +94,13 @@ describe('[RIMS]', async () => {
   it('Versions - should update document to current version and save policy', async () => {
     await reconnect('2');
 
-    const test = ['00012 5.00Jx13Strue'];
-    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
-    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-    const valids: RowData[] = validator.validate();
-    const rimsHelper = new RimsHelper(valids);
-    const result = await rimsHelper.handleInsertionAndUpdate();
+    const buffer = Buffer.from('00012 5.00Jx13Strue', 'utf8');
+    await request(app)
+      .post('/api/rims/upload')
+      .attach('file', buffer, 'rims.txt')
+      .expect(200, {
+        message: 'success'
+      });
     const rimDal = new RimsDAL();
     const docs = await rimDal.find({}).lean().exec();
 
@@ -127,12 +136,14 @@ describe('[RIMS]', async () => {
   it('Versions - should remove unexistent fields in schema of rim document and save policy', async () => {
     await reconnect('3');
 
-    const test = ['00012 5.00Jx13Strue'];
-    const rows = RequestFileParser.parseStringToObjects(test, rims.getRimsColumns());
-    const validator: RimsDocumentsValidator = new RimsDocumentsValidator(rows);
-    const valids: RowData[] = validator.validate();
-    const rimsHelper = new RimsHelper(valids);
-    const result = await rimsHelper.handleInsertionAndUpdate();
+    const buffer = Buffer.from('00012 5.00Jx13Strue', 'utf8');
+    await request(app)
+      .post('/api/rims/upload')
+      .attach('file', buffer, 'rims.txt')
+      .expect(200, {
+        message: 'success'
+      });
+
     const rimDal = new RimsDAL();
     const docs = await rimDal.find({}).lean().exec();
 
@@ -174,6 +185,10 @@ describe('[RIMS]', async () => {
       anotherField: true,
       versions: policies.map((policy: any) => policy._id),
     }]);
+  });
+
+  afterEach(() => {
+    sandbox.restore();
   });
 
   after(async () => {
