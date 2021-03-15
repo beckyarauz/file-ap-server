@@ -8,13 +8,11 @@ interface Environment {
   env: string;
   mongo_uri: string;
   silent_logger: boolean;
-  tolerance: number;
 }
 
 export const environment_variables: Environment = {
   env: process.env.NODE_ENV,
   silent_logger: booleanTransformer(process.env.LOGGER_SILENCE),
-  tolerance: parseFloat(process.env.DOCUMENT_TOLERANCE),
   mongo_uri: process.env.NODE_ENV === 'prod' ? process.env.MONGO_URI : process.env.MONGO_URI_LOCAL
 };
 class Config {
@@ -45,7 +43,6 @@ class Config {
 
     const configFile = require(path);
     this.instance = new this(configFile);
-    // rimsConfigInit(Config.getInstance().getConfig().rims);
     RimsConfig.init(Config.getInstance().getConfig().rims);
   }
 
