@@ -29,7 +29,8 @@ class Logger {
       level: this.logLevel,
       handleExceptions: true,
       silent: environment_variables.silent_logger
-    });
+    },
+    );
 
     this.winstonLogger = winston.createLogger({
       levels: this.logLevels,
