@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiExclude from 'chai-exclude';
 import deepEqualInAnyOrder from 'deep-equal-in-any-order';
 import 'mocha';
-import Config, { environment_variables } from '../../../src/config/config';
+import Config from '../../../src/config/config';
 import { toCamel } from '../../../src/libraries/Utilities';
 import RimsConfig from '../../../src/Rims/config/rims.config';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
@@ -13,7 +13,6 @@ import validDocs from '../../data/v1/rims.rawObject.valid.v1';
 
 chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
-environment_variables.tolerance = 20;
 
 const initialize = async (version?: string) => {
   try {
@@ -31,7 +30,7 @@ describe('[RIMS]', async () => {
   const brokenDocsArray = [
     { code: '1', randomField: 'whatever', anotherRandom: 'blah' }
   ];
-  const invalidDocsAllowedAmmount = Math.round((validDocs.length + invalidDocs.length) * environment_variables.tolerance / 100);
+  const invalidDocsAllowedAmmount = Math.round((validDocs.length + invalidDocs.length) * RimsConfig.getInstance().getTolerance() / 100);
 
   before(() => {
     rimsConfig = RimsConfig.getInstance();

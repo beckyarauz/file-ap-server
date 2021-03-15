@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 import sinon from 'sinon';
 import request from 'supertest';
 import { app, createApi } from '../../../src/api/app';
-import Config, { environment_variables } from '../../../src/config/config';
+import Config from '../../../src/config/config';
 import createDB from '../../../src/config/database';
 import RimsConfig from '../../../src/Rims/config/rims.config';
 import { RimModel, RimPolicyModel } from '../../../src/Rims/config/rims.model';
@@ -18,7 +18,6 @@ import docs from '../../data/v1/rims.rawDocuments.all.v1';
 chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
 chai.use(chaiHttp);
-environment_variables.tolerance = 20;
 
 let helper: RimsHelper;
 let rims: RimsConfig;
