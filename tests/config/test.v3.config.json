@@ -29,7 +29,7 @@
         }
       ]
     },
-    "schema_version": "test-2",
+    "schema_version": "test-3",
     "fileColumns": [
       {
         "name": "code",
@@ -96,6 +96,16 @@
         "order": 6,
         "schemaConfig": {
           "field": "material"
+        }
+      },
+      {
+        "name": "another_field",
+        "pattern": "^(true|false)$",
+        "type": "boolean",
+        "size": 5,
+        "order": 7,
+        "schemaConfig": {
+          "field": "another_field"
         }
       }
     ]

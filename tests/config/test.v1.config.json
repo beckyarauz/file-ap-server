@@ -29,7 +29,7 @@
         }
       ]
     },
-    "schema_version": "test-2",
+    "schema_version": "test-1",
     "fileColumns": [
       {
         "name": "code",

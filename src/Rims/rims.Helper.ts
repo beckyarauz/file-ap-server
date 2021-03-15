@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import _ from 'lodash';
 import { LeanDocument } from 'mongoose';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import { RowData } from '../libraries/Global.interfaces';
 import { ReferenceId } from '../libraries/Global.types';
 import { ObjectMapper } from '../libraries/ObjectMapper';

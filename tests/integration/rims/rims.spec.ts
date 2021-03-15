@@ -23,10 +23,15 @@ let rims: RimsConfig;
 
 const initialize = async (version?: string) => {
   try {
-    Config.init(version);
+    let path = `../../config/test.v1.config.json`;
+    if (version) {
+      path = `../../config/test.v${version}.config.json`;
+    }
+
+    const configFile = require(path);
+    Config.init(configFile, version);
     rims = RimsConfig.getInstance();
     createDB();
-    createApi();
   } catch (e) {
     console.error(e);
   }
@@ -40,9 +45,7 @@ const clear = async (_version?: string) => {
 const reconnect = async (version?: string) => {
   return new Promise<void>((resolve, reject) => {
     mongoose.disconnect().then(() => {
-      Config.init(version);
-      rims = RimsConfig.getInstance();
-      createDB();
+      initialize(version);
       resolve();
     }).catch((e) => {
       reject(e.message);
@@ -57,6 +60,7 @@ describe('[RIMS]', async () => {
 
   before(async () => {
     initialize();
+    createApi();
     await clear();
     const testDocs = docs.concat(brokenDocsArray);
     helper = new RimsHelper(testDocs);

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import APIError from '../libraries/APIError';
 import RimsController from '../Rims/rims.controller';
 import TimeSnapsController from '../Timesnaps/timesnaps.controller';

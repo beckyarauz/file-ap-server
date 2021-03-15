@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { environment_variables } from './config';
-import { logger } from './logger';
+import Config from './config';
+import logger from './logger';
 
-const mongoUri = environment_variables.mongo_uri;
+const mongoUri = Config.environment_variables.mongo_uri;
 
 mongoose.connection.on('error', (error) => {
   logger.error('database-connection-error', error);

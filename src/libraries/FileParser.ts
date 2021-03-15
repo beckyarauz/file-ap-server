@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import * as formidable from 'formidable';
 import fs from 'fs';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import { FileColumns, RowData } from './Global.interfaces';
 
 export class RequestFileParser {

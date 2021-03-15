@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import { RimsHelper } from './rims.Helper';
 
 export default class RimsController {

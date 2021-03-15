@@ -18,24 +18,43 @@ class Logger {
   logLevelCode: number;
   winstonLogger: winston.Logger;
 
-  constructor() {
+  private static instance: any;
+
+  private constructor() {
     this.application = 'document-app';
     this.logLevel = this.getLogLevel();
     this.logLevels = { error: 0, warning: 1, info: 2, debug: 3 };
     this.logLevelCode = this.logLevels[this.logLevel];
+    this.setWinston();
+  }
 
-    // const consoleTransport = new winston.transports.Console({
-    //   level: this.logLevel,
-    //   handleExceptions: true,
-    //   silent: environment_variables.silent_logger
-    // });
+  static init() {
+    this.instance = new this();
+  }
 
-    const consoleTransport = new winston.transports.Console();
+  static getInstance(): Logger {
+    if (!this.instance) {
+      throw new Error('Config has not been initialized. Use Config.init first');
+    }
+    return this.instance;
+  }
 
-    this.winstonLogger = winston.createLogger({
-      levels: this.logLevels,
-      transports: [consoleTransport]
-    });
+  setWinston = () => {
+    try {
+      this.winstonLogger = winston.createLogger({
+        levels: this.logLevels
+      });
+
+      this.winstonLogger.add(new winston.transports.Console());
+
+      // this.winstonLogger.add(new winston.transports.Console({
+      //     level: this.logLevel,
+      //     handleExceptions: true,
+      //     silent: environment_variables.silent_logger
+      //   }));
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   getLogLevel() {
@@ -105,9 +124,7 @@ class Logger {
   }
 }
 
-const logger = new Logger();
+Logger.init();
 
-export {
-  logger
-};
+export default Logger.getInstance();
 

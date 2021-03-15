@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import APIError from './APIError';
 import { RowData } from './Global.interfaces';
 import { Validator, ValidatorResult } from './SchemaValidator';

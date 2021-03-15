@@ -5,6 +5,7 @@ const tsProject = ts.createProject("tsconfig.json");
 
 const files = [
   './tests/**/*.dat',
+  './tests/**/*.json',
   './src/**/*.json',
 ];
 

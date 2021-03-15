@@ -97,6 +97,16 @@
         "schemaConfig": {
           "field": "material"
         }
+      },
+      {
+        "name": "random_field",
+        "pattern": "^(true|false)$",
+        "type": "boolean",
+        "size": 5,
+        "order": 7,
+        "schemaConfig": {
+          "field": "random_field"
+        }
       }
     ]
   }

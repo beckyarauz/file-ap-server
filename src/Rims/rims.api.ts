@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { logger } from '../config/logger';
+import logger from '../config/logger';
 import RimsController from './rims.controller';
 
 const rimsRoutes = express.Router();

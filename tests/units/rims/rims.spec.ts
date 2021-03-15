@@ -16,7 +16,13 @@ chai.use(deepEqualInAnyOrder);
 
 const initialize = async (version?: string) => {
   try {
-    Config.init(version);
+    let path = `../../config/test.v1.config.json`;
+    if (version) {
+      path = `../../config/test.v${version}.config.json`;
+    }
+
+    const configFile = require(path);
+    Config.init(configFile, version);
   } catch (e) {
     console.error(e);
   }
@@ -53,7 +59,19 @@ describe('[RIMS]', async () => {
   it('RimsValidator - should return array with valid documents', async () => {
     const documentMix = [].concat(validDocs, invalidDocs[0]);
     const validator = new RimsDocumentsValidator(documentMix);
-    expect(validator.validate()).to.deep.equalInAnyOrder(validDocs);
+    expect(validator.validate()).to.deep.equalInAnyOrder({
+      valid: validDocs,
+      invalid: [
+        {
+          code: '10000',
+          diameter: '',
+          height: 'J',
+          material: '',
+          one_piece: 'x',
+          width: '6.00',
+        }
+      ]
+    });
   });
 
   it('RimsHelper - should map objects to db ready schema format', async () => {
