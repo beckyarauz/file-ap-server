@@ -15,7 +15,6 @@ import { RimsDAL } from '../../../src/Rims/rims.DAL';
 import { RimsHelper } from '../../../src/Rims/rims.Helper';
 import docs from '../../data/v1/rims.rawDocuments.all.v1';
 
-
 chai.use(chaiExclude);
 chai.use(deepEqualInAnyOrder);
 chai.use(chaiHttp);
